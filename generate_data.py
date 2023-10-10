@@ -7,10 +7,10 @@ import json
 NUM_ROWS = 1000
 
 # Create the CSV file
-OUTPUT_FILE = "troop_movements.csv"
+OUTPUT_FILE = "./data/troop_movements.csv"
 
 # Load home world data from JSON file
-with open("home_worlds.json") as json_file:
+with open("./data/home_worlds.json") as json_file:
     home_worlds = json.load(json_file)
 
 # Generate data rows
