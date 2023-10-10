@@ -20,4 +20,7 @@ cols = ["empire_or_resistance", "homeworld", "unit_type"]
 
 for c in cols:
     get_counts(df,c)
-# empire_or_resistance_counts = get_counts(df, "empire_or_resistance")
+
+# Engineer new feature called is_resistance with a True or False value
+df["is_resistance"] = (df["empire_or_resistance"] == "resistance")
+print(df["is_resistance"])
