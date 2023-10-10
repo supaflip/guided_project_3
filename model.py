@@ -47,6 +47,7 @@ def make_model(model_class, X_train, y_train, seed=True, filename="model.pkl"):
 
     model.fit(X_train, y_train)
     pickle.dump(model, open(filename, "wb"))
+ 
     return model
 
 def evaluate_model(model, X_test, y_test):
@@ -60,7 +61,7 @@ def graph_weights(model, verbose=False):
     importances = model.feature_importances_
 
     # Create a DataFrame to hold the feature importances
-    feature_importances = pd.DataFrame({'Feature': X.columns, 'Importance': importances})
+    feature_importances = pd.DataFrame({'Feature': model.feature_names_in_, 'Importance': importances})
     if verbose and ENABLE_PRINT:
         print (feature_importances)
 
@@ -70,12 +71,13 @@ def graph_weights(model, verbose=False):
     # Create a bar plot that shows feature importance
     if SHOW_GRAPHS:
         plt.figure(figsize=(8, 6))
-        plt.bar(sorted_importances["Feature"])
+        plt.bar(sorted_importances["Feature"], sorted_importances["Importance"])
+        plt.show()
 
-#################################
+#MAIN #################################
 
-def main(filename, classifier):
-    df = pd.read_csv(filename)
+def main(datafile, classifier=CLASSIFIER):
+    df = pd.read_csv(datafile)
 
     apply_to_cols(lambda c: get_counts(df, c, True), "empire_or_resistance", "homeworld", "unit_type")
 
@@ -87,18 +89,19 @@ def main(filename, classifier):
 
     # Create prediction model that predicts if character is joining empire or resistance based on homeworld and unit_type
     X = df[["homeworld", "unit_type"]]
-    y = df["is_resistance"] # boolean in numerical represenation (0, 1)
+    y = df["is_resistance"]
 
     X = pd.get_dummies(X)
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
     if ENABLE_PRINT: print(X_train.shape, y_train.shape)
 
-    model = make_model(classifier, X_train, y_train, filename=f'{filename.strip(".csv")}_model.pkl')
+    pkl_filename = f'{datafile.split("/")[-1].strip(".csv")}_model.pkl'
+    model = make_model(classifier, X_train, y_train, filename=pkl_filename)
 
-    evaluate_model(model)
+    evaluate_model(model, X_test, y_test)
     graph_weights(model)
 
     return model
 
-main(DATAFILE, CLASSIFIER)
+main(DATAFILE)
