@@ -1,9 +1,10 @@
 import pandas as pd 
 import numpy as np 
 import seaborn as sns 
+import pickle
 import matplotlib.pyplot as plt 
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.metrics import confusion_matrix
+from sklearn.metrics import ConfusionMatrixDisplay
 from sklearn.model_selection import train_test_split
 
 
@@ -48,12 +49,38 @@ for c in cols2:
 # Create prediction model that predicts if character is joining empire or resistance based on homeworld and unit_type
 
 X = df[["homeworld", "unit_type"]]
-y = df["is_resistance"] # boolean
+y = df["is_resistance"] # boolean in numerical represenation (0, 1)
+
+X = pd.get_dummies(X)
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 print(X_train.shape, y_train.shape)
 
+model = DecisionTreeClassifier(random_state=42)
+model.fit(X_train, y_train)
+pickle.dump(model, open("decision_tree.pkl", "wb"))
 
+y_pred = model.predict(X_test)
+
+ConfusionMatrixDisplay.from_predictions(y_test, y_pred)
+
+plt.show()
+
+# Get feature importances
+importances = model.feature_importances_
+
+# Create a DataFrame to hold the feature importances
+feature_importances = pd.DataFrame({'Feature': X.columns, 'Importance': importances})
+# print(feature_importances)
+
+# Sorting by highest to lowest Importance
+sorted_importances = feature_importances.sort_values(by = "Importance", ascending = False)
+
+# Create a bar plot that shows feature importance
+plt.figure(figsize=(8, 6))
+plt.bar(sorted_importances["Feature"])
+
+pickle.dump(model, open("decision_tree.pkl", "w"))
 
 
 
