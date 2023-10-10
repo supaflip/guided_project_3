@@ -58,7 +58,7 @@ print(X_train.shape, y_train.shape)
 
 model = DecisionTreeClassifier(random_state=42)
 model.fit(X_train, y_train)
-pickle.dump(model, open("decision_tree.pkl", "wb"))
+pickle.dump(model, open("decision_tree.pkl", "wb")) # save the model as a pickle file
 
 y_pred = model.predict(X_test)
 
@@ -78,9 +78,10 @@ sorted_importances = feature_importances.sort_values(by = "Importance", ascendin
 
 # Create a bar plot that shows feature importance
 plt.figure(figsize=(8, 6))
-plt.bar(sorted_importances["Feature"])
+plt.bar(sorted_importances["Feature"], sorted_importances["Importance"])
+plt.show()
 
-pickle.dump(model, open("decision_tree.pkl", "w"))
+
 
 
 
